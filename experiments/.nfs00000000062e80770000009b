@@ -1,0 +1,32 @@
+#######################################################
+# after determining the optimal tau with a linear kerel, we can check if an rbf or laplacian kernel is better
+#######################################################
+
+
+kernel=rbf
+feature=v
+norm=l2
+tau=None
+sigma2=1.1
+
+
+star=1.1
+end=1.1
+increment=0.1
+for sigma2 in $(seq $star $increment $end)
+	do
+	echo "------------------------------------------------------------feature = $feature, tau = $tau, norm = $norm, kernel = $kernel, sigma2 = $sigma2  -----------------------------------------------------------------------------"
+
+        cd ..
+        python3 main_mvclustering.py --dataset VOC07 --set trainval --which_features $feature --kernel $kernel --sigma2 $sigma2 --normalize $norm --concat_heads True --tau_kernel $tau
+        python3 main_mvclustering.py --dataset VOC12 --set trainval --which_features $feature --kernel $kernel --sigma2 $sigma2 --normalize $norm --concat_heads True --tau_kernel $tau
+
+	cd unsupervised_saliency_detection
+
+	python get_saliency.py --dataset ECSSD --out-dir ECSSD --sigma-spatial 16 --sigma-luma 16 --sigma-chroma 8 --vit-feat $feature --kernel $kernel --sigma2 $sigma2 --normalize $norm --concat_heads True --tau_kernel $tau 
+        python get_saliency.py --dataset DUTS --out-dir DUTS --sigma-spatial 16 --sigma-luma 16 --sigma-chroma 8 --vit-feat $feature --kernel $kernel --sigma2 $sigma2 --normalize $norm --concat_heads True --tau_kernel $tau
+
+done
+
+
+

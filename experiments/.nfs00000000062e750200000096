@@ -1,0 +1,40 @@
+
+
+
+
+#--concat_heads True no longer here except when using three views qkv concat
+
+feature=k
+assign=mean
+#tau="0.75 0.75 0.75 0.75 0.75 0.75 0.15 0.15 0.15 0.15 0.15 0.15 0.2 0.2 0.2 0.2 0.2 0.2"
+tau="0.15 "
+rho=1
+eta=1
+kappa="0 0 0 0 0 0"
+
+echo "----------------------------------------------------------- rho $rho, feature = $feature, tau = $tau, assign = $assign, kappa = $kappa -----------------------------------------------------------------------------"
+cd ..
+python3 main_mvclustering.py --dataset VOC07 --set trainval --which_features $feature --kernel linear --normalize l2 --tau_kernel $tau --binary_graph --rho $rho --assign_func $assign --kappa $kappa --eta $eta
+python3 main_mvclustering.py --concat_heads True --dataset VOC12 --set trainval --which_features $feature --kernel linear --normalize l2 --tau_kernel $tau --binary_graph --rho $rho --assign_func $assign --kappa $kappa --eta $eta
+cd unsupervised_saliency_detection
+python3 get_saliency.py --dataset ECSSD --out-dir ECSSD --sigma-spatial 16 --sigma-luma 16 --sigma-chroma 8 --vit-feat $feature --kernel linear --normalize l2 --tau_kernel $tau --binary_graph --rho $rho --assign_func $assign --kappa $kappa --eta $eta
+python get_saliency.py --concat_heads True --dataset DUTS --out-dir DUTS --sigma-spatial 16 --sigma-luma 16 --sigma-chroma 8 --vit-feat $feature --kernel linear --normalize l2 --tau_kernel $tau --binary_graph --rho $rho --assign_func $assign --kappa $kappa --eta $eta
+
+
+#kappa="0 0 1"
+#echo "----------------------------------------------------------- rho $rho, feature = $feature, tau = $tau, assign = $assign, kappa = $kappa -----------------------------------------------------------------------------"
+#cd ..
+#python3 main_mvclustering.py --concat_heads True --dataset VOC07 --set trainval --which_features $feature --kernel linear --normalize l2 --tau_kernel $tau --binary_graph --rho $rho --assign_func $assign --kappa $kappa
+#python3 main_mvclustering.py --concat_heads True --dataset VOC12 --set trainval --which_features $feature --kernel linear --normalize l2 --tau_kernel $tau --binary_graph --rho $rho --assign_func $assign --kappa $kappa
+#cd unsupervised_saliency_detection
+#python get_saliency.py --concat_heads True --dataset ECSSD --out-dir ECSSD --sigma-spatial 16 --sigma-luma 16 --sigma-chroma 8 --vit-feat $feature --kernel linear --normalize l2 --tau_kernel $tau --binary_graph --rho $rho --assign_func $assign --kappa $kappa
+#python get_saliency.py --concat_heads True --dataset DUTS --out-dir DUTS --sigma-spatial 16 --sigma-luma 16 --sigma-chroma 8 --vit-feat $feature --kernel linear --normalize l2 --tau_kernel $tau --binary_graph --rho $rho --assign_func $assign --kappa $kappa
+
+#kappa="1 0 0"
+#echo "----------------------------------------------------------- rho $rho, feature = $feature, tau = $tau, assign = $assign, kappa = $kappa -----------------------------------------------------------------------------"
+#cd ..
+#python3 main_mvclustering.py --concat_heads True --dataset VOC07 --set trainval --which_features $feature --kernel linear --normalize l2 --tau_kernel $tau --binary_graph --rho $rho --assign_func $assign --kappa $kappa
+#python3 main_mvclustering.py --concat_heads True --dataset VOC12 --set trainval --which_features $feature --kernel linear --normalize l2 --tau_kernel $tau --binary_graph --rho $rho --assign_func $assign --kappa $kappa
+#cd unsupervised_saliency_detection
+#python get_saliency.py --concat_heads True --dataset ECSSD --out-dir ECSSD --sigma-spatial 16 --sigma-luma 16 --sigma-chroma 8 --vit-feat $feature --kernel linear --normalize l2 --tau_kernel $tau --binary_graph --rho $rho --assign_func $assign --kappa $kappa
+#python get_saliency.py --concat_heads True --dataset DUTS --out-dir DUTS --sigma-spatial 16 --sigma-luma 16 --sigma-chroma 8 --vit-feat $feature --kernel linear --normalize l2 --tau_kernel $tau --binary_graph --rho $rho --assign_func $assign --kappa $kappa
